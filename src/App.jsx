@@ -152,7 +152,7 @@ function Welcome() {
         <h1>Stuck with a vehicle or driving licence service?</h1>
         <p>Answer a few simple questions. Get a clear, practical checklist for what to do next.</p>
         <Link className="button button--primary" to="/situation-selector">Find my next step <span aria-hidden="true">→</span></Link>
-        <p className="privacy">◇ No login &nbsp;·&nbsp; Stays on your device &nbsp;·&nbsp; Takes 2 minutes</p>
+        <p className="privacy">◇ No login &nbsp;·&nbsp; Nothing leaves your device &nbsp;·&nbsp; Takes 2 minutes</p>
       </div>
     </section>
   )
