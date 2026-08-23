@@ -28,9 +28,9 @@ export const resultPlans = {
     { title: 'Ask for the payment to be traced', text: 'If the status remains unchanged, ask the relevant regional transport office (RTO) or portal support team to trace the payment using your bank reference.' },
   ],
   DUPLICATE_DEBIT: [
-    { title: 'Document both debits', text: 'Save a bank statement or screenshots showing both transaction IDs, amounts, and timestamps for the same application.' },
+    { title: 'Document all debits', text: 'Save a bank statement or screenshots showing all transaction IDs, amounts, and timestamps for the same application.' },
     { title: 'Check which transaction was accepted', text: 'Verify the application and payment status on the official Parivahan portal before taking action.', officialLink: true },
-    { title: 'Raise a duplicate-debit refund request', text: 'Send both bank references and the application number to the relevant RTO or portal helpdesk. Contact your bank if they confirm the extra debit was not accepted.' },
+    { title: 'Raise a duplicate-debit refund request', text: 'Send all bank references and the application number to the relevant RTO or portal helpdesk. Contact your bank if they confirm the extra debit was not accepted.' },
   ],
   RECEIPT_REQUIRED: [
     { title: 'Open the official receipt or payment-status flow', text: 'On the official Parivahan portal, choose your service and look for Print Receipt, Fee Receipt, or Verify Payment Status.', officialLink: true },
