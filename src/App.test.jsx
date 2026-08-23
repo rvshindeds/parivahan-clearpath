@@ -40,10 +40,24 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+describe.each([
+  ['/welcome', 'Stuck with a vehicle or driving licence service?'],
+  ['/situation-selector', 'What’s going wrong?'],
+  ['/minimal-details', 'Help us narrow it down'],
+  ['/diagnostic', 'We found a clear path forward'],
+])('%s heading hierarchy', (route, mainHeading) => {
+  it('has exactly one h1 for the screen title', () => {
+    render(<MemoryRouter initialEntries={[route]}><App /></MemoryRouter>)
+    expect(screen.getByRole('heading', { level: 1, name: mainHeading })).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
+  })
+})
+
 describe.each(cases)('%s result', (state, statusLabel) => {
   it('shows the correct plain-language status and state-specific checklist', () => {
     renderResult(state)
-    expect(screen.getByRole('heading', { name: statusLabel })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: statusLabel })).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
     for (const step of resultPlans[state]) {
       expect(screen.getByText(step.title)).toBeInTheDocument()
       expect(screen.getByText(step.text)).toBeInTheDocument()
@@ -95,4 +109,11 @@ it('fully resets a completed case before starting a new one', async () => {
   for (const situation of situations) expect(screen.getByText(situation.title)).toBeInTheDocument()
   expect(screen.getByRole('heading', { name: 'What’s going wrong?' })).toBeInTheDocument()
   expect(screen.queryByRole('heading', { name: 'Which payment issue applies?' })).not.toBeInTheDocument()
+
+  await user.click(screen.getByRole('button', { name: /I need my receipt/i }))
+  await user.click(screen.getByRole('button', { name: /Continue/i }))
+
+  expect(screen.getByLabelText(/Application or receipt number/i)).toHaveValue('')
+  expect(screen.getByLabelText(/State or UT/i)).toHaveValue('')
+  expect(screen.getByLabelText(/When did you apply/i)).toHaveValue('')
 })

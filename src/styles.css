@@ -3,7 +3,7 @@
 :root { font-family: 'DM Sans', system-ui, sans-serif; color: #173b31; background: #e7eee9; font-synthesis: none; }
 * { box-sizing: border-box; }
 :focus-visible { outline: 3px solid #0b65c2; outline-offset: 3px; }
-main:focus, h2:focus { outline: none; }
+main:focus, h1[tabindex="-1"]:focus { outline: none; }
 body { margin: 0; min-width: 320px; background: #e7eee9; }
 button, input, select { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -33,9 +33,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .car { position: absolute; z-index: 4; color: #ed7047; font-size: 55px; left: 90px; top: 160px; transform: rotate(-18deg); text-shadow: 5px 6px #173b31; }
 .hero-copy { position: relative; }
 .eyebrow { color: #96430f; font-size: 11px; font-weight: 800; letter-spacing: .14em; margin: 0 0 9px; }
-h1, h2 { font-family: 'Manrope', sans-serif; margin: 0; color: #12372a; letter-spacing: -.045em; }
-h1 { font-size: clamp(32px, 9vw, 43px); line-height: 1.03; }
-h2 { font-size: 30px; line-height: 1.1; }
+h1, h2, h3 { font-family: 'Manrope', sans-serif; margin: 0; color: #12372a; letter-spacing: -.045em; }
+h1 { font-size: 30px; line-height: 1.1; }
+h2 { font-size: 22px; line-height: 1.2; }
+h3 { font-size: 17px; line-height: 1.25; }
+.hero-copy h1 { font-size: clamp(32px, 9vw, 43px); line-height: 1.03; }
 .hero-copy > p:not(.eyebrow,.privacy), .summary, .centered > p:not(.eyebrow) { color: #5c746c; line-height: 1.55; font-size: 15px; }
 .button { width: 100%; min-height: 54px; border-radius: 14px; border: 0; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; text-decoration: none; cursor: pointer; margin-top: 20px; }
 .button span { font-size: 22px; }

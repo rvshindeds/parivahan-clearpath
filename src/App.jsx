@@ -82,8 +82,13 @@ export function App() {
     sessionStorage.setItem('clearpath-flow', JSON.stringify(flow))
   }, [flow])
 
+  const resetFlow = () => {
+    sessionStorage.removeItem('clearpath-flow')
+    setFlow({ ...emptyFlow })
+  }
+
   return (
-    <FlowContext.Provider value={{ flow, setFlow }}>
+    <FlowContext.Provider value={{ flow, setFlow, resetFlow }}>
       <div className="app-shell">
         <Disclaimer />
         <RouteFocus />
@@ -135,7 +140,7 @@ function Welcome() {
         <h1>Stuck with a vehicle or driving licence service?</h1>
         <p>Answer a few simple questions. Get a clear, practical checklist for what to do next.</p>
         <Link className="button button--primary" to="/situation-selector">Find my next step <span aria-hidden="true">→</span></Link>
-        <p className="privacy">◇ No login &nbsp;·&nbsp; No data stored &nbsp;·&nbsp; Takes 2 minutes</p>
+        <p className="privacy">◇ No login &nbsp;·&nbsp; Stays on your device &nbsp;·&nbsp; Takes 2 minutes</p>
       </div>
     </section>
   )
@@ -173,7 +178,7 @@ function SituationSelector() {
       <Header step={1} title="Choose the closest match. You can change this later." />
       <div className="content">
         <p className="eyebrow">LET'S START HERE</p>
-        <h2 ref={screenHeading} tabIndex="-1">{choosingPaymentType ? 'Which payment issue applies?' : 'What’s going wrong?'}</h2>
+        <h1 ref={screenHeading} tabIndex="-1">{choosingPaymentType ? 'Which payment issue applies?' : 'What’s going wrong?'}</h1>
         {choosingPaymentType ? (
           <>
             <button type="button" className="text-back" onClick={returnToTopLevelSituations}>← Choose a different situation</button>
@@ -209,7 +214,7 @@ function MinimalDetails() {
       <Header step={2} title="Only share what you’re comfortable with." />
       <form className="content" onSubmit={e => { e.preventDefault(); navigate('/diagnostic') }}>
         <p className="eyebrow">A FEW DETAILS</p>
-        <h2>Help us narrow it down</h2>
+        <h1>Help us narrow it down</h1>
         <label>Application or receipt number <span>Optional</span><input name="reference" value={flow.reference} onChange={update} placeholder="e.g. DL2026…" /></label>
         <label>State or UT<select name="state" value={flow.state} onChange={update} required><option value="">Select your state</option><option>Delhi</option><option>Karnataka</option><option>Maharashtra</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Uttar Pradesh</option><option>Other</option></select></label>
         <label>When did you apply? <span>Optional</span><input type="date" name="date" value={flow.date} onChange={update} /></label>
@@ -228,7 +233,7 @@ function Diagnostic() {
       <div className="content centered">
         <div className="radar" aria-hidden="true"><span>✓</span></div>
         <p className="eyebrow">SITUATION CHECKED</p>
-        <h2>We found a clear path forward</h2>
+        <h1>We found a clear path forward</h1>
         <p>Based on the details you shared, here’s the safest order to try.</p>
         <div className="check-stack"><span>✓ Details reviewed</span><span>✓ Common causes compared</span><span>✓ Next actions prepared</span></div>
         <button className="button button--primary" onClick={() => navigate('/result')}>Show my action plan <span aria-hidden="true">→</span></button>
@@ -238,7 +243,7 @@ function Diagnostic() {
 }
 
 function Result() {
-  const { flow, setFlow } = useContext(FlowContext)
+  const { flow, resetFlow } = useContext(FlowContext)
   const selected = [...situations, ...paymentIssues].find(s => s.id === flow.situation)
   const showPaymentWarning = ['DEBITED_STATUS_PENDING', 'DUPLICATE_DEBIT'].includes(flow.situation)
   const recoverySteps = resultPlans[flow.situation] || []
@@ -256,7 +261,7 @@ function Result() {
       <div className="result-head"><Brand compact /><span>YOUR CLEARPATH</span></div>
       <div className="content">
         <p className="eyebrow">RECOMMENDED NEXT STEPS</p>
-        <h2>{selected?.title || 'Your action plan'}</h2>
+        <h1>{selected?.title || 'Your action plan'}</h1>
         <p className="summary">Try these steps in order. Keep screenshots and reference numbers as you go.</p>
         {showPaymentWarning && (
           <div className="payment-warning" role="alert" aria-live="assertive">
@@ -282,7 +287,7 @@ function Result() {
         <details className="rule-details"><summary>Why am I seeing this?</summary><p>{resultRules[flow.situation] || 'This path was selected from the information you provided.'}</p></details>
         <div className="caution"><strong>Before you proceed</strong><p>Never share OTPs or pay anyone claiming they can “unlock” your application. Verify every address independently.</p></div>
         <button className="button button--download" type="button" onClick={downloadRecoveryNote}><span aria-hidden="true">⇩</span> Download recovery note</button>
-        <Link className="button button--secondary" to="/welcome" onClick={() => setFlow({ ...emptyFlow })}>Start over</Link>
+        <Link className="button button--secondary" to="/welcome" onClick={resetFlow}>Start over</Link>
       </div>
     </section>
   )
