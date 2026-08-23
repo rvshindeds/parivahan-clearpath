@@ -104,6 +104,7 @@ it('fully resets a completed case before starting a new one', async () => {
 
   expect(screen.getByRole('heading', { name: 'Money debited, status pending' })).toBeInTheDocument()
   await user.click(screen.getByRole('link', { name: 'Start over' }))
+  expect(sessionStorage.getItem('clearpath-flow')).toBeNull()
   await user.click(screen.getByRole('link', { name: 'Find my next step' }))
 
   for (const situation of situations) expect(screen.getByText(situation.title)).toBeInTheDocument()
@@ -116,4 +117,16 @@ it('fully resets a completed case before starting a new one', async () => {
   expect(screen.getByLabelText(/Application or receipt number/i)).toHaveValue('')
   expect(screen.getByLabelText(/State or UT/i)).toHaveValue('')
   expect(screen.getByLabelText(/When did you apply/i)).toHaveValue('')
+})
+
+it('programmatically associates every details label with its form control', () => {
+  render(<MemoryRouter initialEntries={['/minimal-details']}><App /></MemoryRouter>)
+
+  const labels = [...document.querySelectorAll('label')]
+  expect(labels).toHaveLength(3)
+  for (const label of labels) {
+    expect(label.htmlFor).not.toBe('')
+    expect(label.control).not.toBeNull()
+    expect(label.control.id).toBe(label.htmlFor)
+  }
 })

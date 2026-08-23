@@ -69,6 +69,7 @@ function RouteFocus() {
 }
 
 export function App() {
+  const skipNextStorageWrite = useRef(false)
   const [flow, setFlow] = useState(() => {
     try {
       const savedFlow = sessionStorage.getItem('clearpath-flow')
@@ -79,10 +80,15 @@ export function App() {
   })
 
   useEffect(() => {
+    if (skipNextStorageWrite.current) {
+      skipNextStorageWrite.current = false
+      return
+    }
     sessionStorage.setItem('clearpath-flow', JSON.stringify(flow))
   }, [flow])
 
   const resetFlow = () => {
+    skipNextStorageWrite.current = true
     sessionStorage.removeItem('clearpath-flow')
     setFlow({ ...emptyFlow })
   }
@@ -215,10 +221,14 @@ function MinimalDetails() {
       <form className="content" onSubmit={e => { e.preventDefault(); navigate('/diagnostic') }}>
         <p className="eyebrow">A FEW DETAILS</p>
         <h1>Help us narrow it down</h1>
-        <label>Application or receipt number <span>Optional</span><input name="reference" value={flow.reference} onChange={update} placeholder="e.g. DL2026…" /></label>
-        <label>State or UT<select name="state" value={flow.state} onChange={update} required><option value="">Select your state</option><option>Delhi</option><option>Karnataka</option><option>Maharashtra</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Uttar Pradesh</option><option>Other</option></select></label>
-        <label>When did you apply? <span>Optional</span><input type="date" name="date" value={flow.date} onChange={update} /></label>
-        <div className="safe-note"><span aria-hidden="true">⌾</span><p><strong>Your privacy matters</strong><br />This prototype does not send, verify, or store these details.</p></div>
+        <p className="synthetic-note"><strong>Demo values only:</strong> Use made-up details, not a real application or receipt number.</p>
+        <label htmlFor="reference">Application or receipt number <span>Optional</span></label>
+        <input id="reference" name="reference" value={flow.reference} onChange={update} placeholder="e.g. TEST-1234" />
+        <label htmlFor="state">State or UT</label>
+        <select id="state" name="state" value={flow.state} onChange={update} required><option value="">Select your state</option><option>Delhi</option><option>Karnataka</option><option>Maharashtra</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Uttar Pradesh</option><option>Other</option></select>
+        <label htmlFor="application-date">When did you apply? <span>Optional</span></label>
+        <input id="application-date" type="date" name="date" value={flow.date} onChange={update} />
+        <div className="safe-note"><span aria-hidden="true">⌾</span><p><strong>Your privacy matters</strong><br />Nothing you enter is sent to a server. It stays in this browser tab and is removed when you start over or close the tab.</p></div>
         <button className="button button--primary" type="submit" disabled={!flow.state}>Check my situation <span aria-hidden="true">→</span></button>
       </form>
     </section>
@@ -263,6 +273,7 @@ function Result() {
         <p className="eyebrow">RECOMMENDED NEXT STEPS</p>
         <h1>{selected?.title || 'Your action plan'}</h1>
         <p className="summary">Try these steps in order. Keep screenshots and reference numbers as you go.</p>
+        <p className="sample-guidance"><strong>This is sample guidance based on common cases, not a live status check.</strong></p>
         {showPaymentWarning && (
           <div className="payment-warning" role="alert" aria-live="assertive">
             <span className="payment-warning__icon" aria-hidden="true">⚠</span>
