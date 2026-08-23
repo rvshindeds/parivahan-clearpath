@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -129,4 +129,26 @@ it('programmatically associates every details label with its form control', () =
     expect(label.control).not.toBeNull()
     expect(label.control.id).toBe(label.htmlFor)
   }
+})
+
+it('prevents a future application date from being selected or saved', async () => {
+  const user = userEvent.setup()
+  sessionStorage.setItem('clearpath-flow', JSON.stringify({
+    category: 'RECEIPT_REQUIRED', situation: 'RECEIPT_REQUIRED', state: 'Delhi', reference: '', date: '',
+  }))
+  render(<MemoryRouter initialEntries={['/minimal-details']}><App /></MemoryRouter>)
+
+  const dateInput = screen.getByLabelText(/When did you apply/i)
+  const today = new Date()
+  const localToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const futureDate = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`
+
+  expect(dateInput).toHaveAttribute('max', localToday)
+  fireEvent.change(dateInput, { target: { value: futureDate } })
+  expect(dateInput).toHaveValue('')
+
+  await user.click(screen.getByRole('button', { name: /Check my situation/i }))
+  expect(JSON.parse(sessionStorage.getItem('clearpath-flow')).date).toBe('')
 })

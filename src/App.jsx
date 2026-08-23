@@ -3,6 +3,12 @@ import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-r
 
 const FlowContext = createContext(null)
 const emptyFlow = { category: '', situation: '', reference: '', state: '', date: '' }
+const toLocalDateValue = date => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
 export const situations = [
   { id: 'payment', icon: '₹', title: 'Payment issue', text: 'Pending, debited but not updated, or debited twice' },
@@ -214,7 +220,11 @@ function SituationSelector() {
 function MinimalDetails() {
   const { flow, setFlow } = useContext(FlowContext)
   const navigate = useNavigate()
-  const update = e => setFlow({ ...flow, [e.target.name]: e.target.value })
+  const today = toLocalDateValue(new Date())
+  const update = e => {
+    if (e.target.name === 'date' && e.target.value > today) return
+    setFlow({ ...flow, [e.target.name]: e.target.value })
+  }
   return (
     <section className="screen flow-screen">
       <Header step={2} title="Only share what you’re comfortable with." />
@@ -227,7 +237,7 @@ function MinimalDetails() {
         <label htmlFor="state">State or UT</label>
         <select id="state" name="state" value={flow.state} onChange={update} required><option value="">Select your state</option><option>Delhi</option><option>Karnataka</option><option>Maharashtra</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Uttar Pradesh</option><option>Other</option></select>
         <label htmlFor="application-date">When did you apply? <span>Optional</span></label>
-        <input id="application-date" type="date" name="date" value={flow.date} onChange={update} />
+        <input id="application-date" type="date" name="date" value={flow.date} max={today} onChange={update} />
         <div className="safe-note"><span aria-hidden="true">⌾</span><p><strong>Your privacy matters</strong><br />Nothing you enter is sent to a server. It stays in this browser tab and is removed when you start over or close the tab.</p></div>
         <button className="button button--primary" type="submit" disabled={!flow.state}>Check my situation <span aria-hidden="true">→</span></button>
       </form>
