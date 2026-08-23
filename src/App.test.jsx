@@ -82,3 +82,17 @@ it('returns from the payment follow-up to the top-level situation selector', asy
   expect(screen.queryByText('YOUR NEXT STEP, MADE CLEAR')).not.toBeInTheDocument()
   expect(screen.queryByText(paymentIssues[0].title)).not.toBeInTheDocument()
 })
+
+it('fully resets a completed case before starting a new one', async () => {
+  const user = userEvent.setup()
+  setCase('DEBITED_STATUS_PENDING')
+  render(<MemoryRouter initialEntries={['/result']}><App /></MemoryRouter>)
+
+  expect(screen.getByRole('heading', { name: 'Money debited, status pending' })).toBeInTheDocument()
+  await user.click(screen.getByRole('link', { name: 'Start over' }))
+  await user.click(screen.getByRole('link', { name: 'Find my next step' }))
+
+  for (const situation of situations) expect(screen.getByText(situation.title)).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'What’s going wrong?' })).toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: 'Which payment issue applies?' })).not.toBeInTheDocument()
+})

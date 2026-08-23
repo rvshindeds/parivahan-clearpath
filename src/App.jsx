@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 const FlowContext = createContext(null)
+const emptyFlow = { category: '', situation: '', reference: '', state: '', date: '' }
 
 export const situations = [
   { id: 'payment', icon: '₹', title: 'Payment issue', text: 'Pending, debited but not updated, or debited twice' },
@@ -69,7 +70,6 @@ function RouteFocus() {
 
 export function App() {
   const [flow, setFlow] = useState(() => {
-    const emptyFlow = { category: '', situation: '', reference: '', state: '', date: '' }
     try {
       const savedFlow = sessionStorage.getItem('clearpath-flow')
       return savedFlow ? { ...emptyFlow, ...JSON.parse(savedFlow) } : emptyFlow
@@ -238,7 +238,7 @@ function Diagnostic() {
 }
 
 function Result() {
-  const { flow } = useContext(FlowContext)
+  const { flow, setFlow } = useContext(FlowContext)
   const selected = [...situations, ...paymentIssues].find(s => s.id === flow.situation)
   const showPaymentWarning = ['DEBITED_STATUS_PENDING', 'DUPLICATE_DEBIT'].includes(flow.situation)
   const recoverySteps = resultPlans[flow.situation] || []
@@ -282,7 +282,7 @@ function Result() {
         <details className="rule-details"><summary>Why am I seeing this?</summary><p>{resultRules[flow.situation] || 'This path was selected from the information you provided.'}</p></details>
         <div className="caution"><strong>Before you proceed</strong><p>Never share OTPs or pay anyone claiming they can “unlock” your application. Verify every address independently.</p></div>
         <button className="button button--download" type="button" onClick={downloadRecoveryNote}><span aria-hidden="true">⇩</span> Download recovery note</button>
-        <Link className="button button--secondary" to="/welcome">Start over</Link>
+        <Link className="button button--secondary" to="/welcome" onClick={() => setFlow({ ...emptyFlow })}>Start over</Link>
       </div>
     </section>
   )
